@@ -1,0 +1,7 @@
+db.page_information.find().pretty()
+db.page_information.findone()
+page_information.findone()
+database.page_information.findone()
+show collections
+use database
+show dbs

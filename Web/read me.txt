@@ -1,0 +1,22 @@
+This is my web project
+
+run it with the run.ps1 file after running the install_requirements.ps1 file.
+
+Docker and npm/node.js need to be installed separately first.
+Due to VM issues I couldn't properly test the install from a clean start so there may be minor packages missing! 
+
+This is the first version of this project, I finished it a few months ago and returned today to make it more user friendly before it goes on github. 
+
+The database has been wiped a couple times so the actual saved database is quite small, the spider starts from movie Wikipedia so that is all of the results
+from the get go. 
+
+Plans for version 2:
+
+-Actual usage of the benefits of Docker (right now all containers are 1-1-1 etc, with some changes there could be multiple spiders and processors, the framework is there
+but not implemented yet).
+-better ui 
+-images
+
+
+
+  
