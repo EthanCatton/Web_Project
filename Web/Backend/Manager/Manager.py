@@ -49,11 +49,11 @@ def manage_json(data):
        combined_data=dict(page_information=page_data,word_frequency=freq_data)
        db_arr.append(combined_data)
    print("Appending new data for Mongo")  
-   sendtodb(db_arr)    
+   send_to_db(db_arr)    
        
 
 
-def sendtodb(db_arr): 
+def send_to_db(db_arr): 
      db=c["database"]
      col=db["page_information"]
      try:

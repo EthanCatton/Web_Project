@@ -12,17 +12,17 @@ import string
 url_dict={}
 
 def main():
- query=getquery()
- query=proccesquery(query)
+ query=get_query()
+ query=proccess_query(query)
  
 
  global c
  c=pm.MongoClient("mongodb://localhost:27018")
  
- getmongo(query)
+ get_mongo(query)
+  
  
- 
-def proccesquery(data): 
+def proccess_query(data): 
  #just a copy of the lematising code from processor
  
     data=data.lower()
@@ -50,12 +50,12 @@ def proccesquery(data):
     return data
 
 
-def getquery():
+def get_query():
  query=sys.stdin.readline()
  query=query.strip()
  return query
 
-def getmongo(query):
+def get_mongo(query):
  db=c["database"]
  col=db["page_information"]  
 

@@ -54,7 +54,6 @@ def reformat(og_data):
         if len(checker)>50:
            checker.clear()
 
-
     return og_data,page_data,flag
 
 
@@ -63,13 +62,11 @@ def reformat(og_data):
 def process(data): 
     print("processing data")
     
-    
     if not isinstance(data,str):
        return "None"
     
     
     data=data.lower()
-   
     
     data=nltk.word_tokenize(data)
     #remove punctuation
@@ -90,19 +87,19 @@ def process(data):
 
     data=Counter(data)
     data=dict(data)
-    
 
     return data
-
+ 
 
 def data_output(og_data,lem_data):
    global upload_counter
-   raw_json=json.dumps(og_data)
-   lem_json=json.dumps(lem_data)
-   stored_data=json.dumps([raw_json,lem_json]) 
+   og_json=json.dumps(og_data)
+   lem_json=json.dumps(lem_data) 
+   stored_data=json.dumps([og_json,lem_json]) 
 
    r=redis.Redis(host="192.168.57.3",port=6379,decode_responses=True) 
    upload_counter+=1
+   #0:200  just gives a snippet of og data for preview 
    print("Pushing data to Redis:", upload_counter,og_data[0:200])  
    r.lpush("page_information",stored_data)
    #rlen=r.llen("page_information")
@@ -117,19 +114,15 @@ def sequence(og_data):
     if data=="None" or flag==True:
        return
     lem_data=process(page_data)
-    data_output(data,lem_data) 
+    data_output(data,lem_data)  
 
        
-
-  
-   
-
 async def main():
     server= await asy.start_server(data_input,"192.168.57.15",5757,limit=5048000)  
     async with server:
         await server.serve_forever()  
 
-#repeat safeguard 
+#repeat launch safeguard 
 if __name__ == "__main__":  
     asy.run(main())
-
+ 

@@ -7,7 +7,7 @@ $viteswitch=Start-Process -FilePath "npm.cmd" -WorkingDirectory ".\Frontend\Reac
 
 Write-Host "All main components coming online, please give a few seconds for Docker containers to fully start"
 Write-Host "http://localhost:5173 via Vite"
-Start-Sleep -Seconds 3 
+Start-Sleep -Seconds 3
 
 
 Write-Host "Press any key to begin shutdown"
