@@ -1,4 +1,4 @@
-function Result_List(data, bool) {
+function Result_List(data) {
   // gets rid of outer brackets
   console.log(data.data);
   const oneparse = JSON.parse(data.data);

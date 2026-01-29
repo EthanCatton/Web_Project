@@ -10,11 +10,11 @@ import (
 	"github.com/gocolly/colly/queue"
 )
 
-//colours
+// colours
 var grey = "\033[30m"
 var red = "\033[31m"
 var green = "\033[32m"
-var blue = "\033[34m" 
+var blue = "\033[34m"
 var purple = "\033[35m"
 var pink = "\033[91m"
 
@@ -29,23 +29,23 @@ type Webpage struct {
 
 var site_counter int = 1
 
-//covers actually crawling
-func main() { 
-	fmt.Println("Running") 
+// covers actually crawling
+func main() {
+	fmt.Println("Running")
 
 	var emptystruct Webpage
 
 	//colly specific queue
-	crawl_queue, _ := queue.New(  
+	crawl_queue, _ := queue.New(
 		//parallelism, cant handle different numbers
-		2, 
+		2,
 		//prevents throughput issues later
-		&queue.InMemoryQueueStorage{MaxSize: 10000}, 
+		&queue.InMemoryQueueStorage{MaxSize: 10000},
 	)
- 
+
 	//Setup spider
-	spider := colly.NewCollector()  
-	spider.SetRequestTimeout(15 * time.Second)  
+	spider := colly.NewCollector()
+	spider.SetRequestTimeout(15 * time.Second)
 	spider.IgnoreRobotsTxt = false
 
 	//new page
@@ -63,7 +63,7 @@ func main() {
 	spider.OnHTML("a[href]", func(element *colly.HTMLElement) {
 		//fmt.Println("link found")
 		newlink := element.Request.AbsoluteURL(element.Attr("href"))
-		crawl_queue.AddURL(newlink)  
+		crawl_queue.AddURL(newlink)
 	})
 
 	//when title found
@@ -109,7 +109,7 @@ func main() {
 
 	//Actual Main from here
 	fmt.Println("starting crawl")
-	crawl_queue.AddURL("https://www.scrapethissite.com/")  
+	crawl_queue.AddURL("https://www.scrapethissite.com/")
 	crawl_queue.Run(spider)
 
 	//wait to stop any weird queue behaviour
@@ -117,7 +117,7 @@ func main() {
 	spider.Wait()
 }
 
-//manages sending data to next step
+// manages sending data to next step
 func data_handling(page_data Webpage, emptystruct Webpage) {
 	fmt.Println(blue + "spider attempting to send data")
 	send_data, err := json.Marshal(page_data)

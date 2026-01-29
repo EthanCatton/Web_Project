@@ -2,7 +2,7 @@ import Search from "./Components/Search";
 import "./style.css";
 
 function App() {
-  function getquery() {}
+  // function getquery() {}
   return (
     <>
       <header className="headingbar">

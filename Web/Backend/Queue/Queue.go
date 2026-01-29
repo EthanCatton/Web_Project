@@ -11,12 +11,12 @@ import (
 )
 
 // Colours
-var grey="\033[30m"
-var red="\033[31m"
-var green="\033[32m"
-var blue="\033[34m"
-var purple="\033[35m"
-var pink="\033[91m"
+var grey = "\033[30m"
+var red = "\033[31m"
+var green = "\033[32m"
+var blue = "\033[34m"
+var purple = "\033[35m"
+var pink = "\033[91m"
 
 // Data Storage
 type Webpage struct {
@@ -30,31 +30,31 @@ type Webpage struct {
 var queue []Webpage
 var lock sync.Mutex
 var checklock sync.Mutex
-var checker string=""
-var counter int=1
+var checker string = ""
+var counter int = 1
 
 func main() {
 	//catches spider data
 	fmt.Println("Running")
-	lis, err:=net.Listen("tcp","192.168.57.5:5757")
-	if err!=nil{
+	lis, err := net.Listen("tcp", "192.168.57.5:5757")
+	if err != nil {
 		fmt.Println(red+"error 1: ", err)
 
 	}
 	defer lis.Close()
-	
+
 	go proc_loop()
 
 	//infinite loop
 	for {
-		conn,err:=lis.Accept()
-		if err!=nil{
+		conn, err := lis.Accept()
+		if err != nil {
 			fmt.Println(red+"error 2:", err)
 			continue
 		}
 
-		if conn!=nil{
-			go fetch_spider(conn) 
+		if conn != nil {
+			go fetch_spider(conn)
 		}
 	}
 }
@@ -113,7 +113,7 @@ func manage_queue(web_data Webpage) {
 	//mutexs to prevent multiple edit attempts by different routines
 	lock.Lock()
 	//fmt.Println(purple+"queue len:", len(queue))
-	fmt.Println("adding to queue") 
+	fmt.Println("adding to queue")
 
 	if len(queue) > 0 {
 		//protects against duplicates
@@ -122,12 +122,12 @@ func manage_queue(web_data Webpage) {
 			queue = append(queue, web_data)
 			//fmt.Println(queue[len(queue)-1].URL)
 		}
-	}else{
+	} else {
 		//starts off queue
 		queue = append(queue, web_data)
 	}
-	fmt.Println("queue length:",len(queue)) 
-	lock.Unlock() 
+	fmt.Println("queue length:", len(queue))
+	lock.Unlock()
 }
 
 func send_to_proc() {
@@ -139,12 +139,12 @@ func send_to_proc() {
 		fmt.Println(red + "error 5.5, queue 0")
 		lock.Unlock()
 		return
-	} 
+	}
 
 	//gets first data and then removes from queue
 	page_data := queue[0]
 	queue = queue[1:]
-	//lock.Unlock()  
+	//lock.Unlock()
 
 	//probably not needed with rework but harmless rn
 	checklock.Lock()
@@ -155,7 +155,7 @@ func send_to_proc() {
 		return
 	}
 	checker = page_data.URL
-	checklock.Unlock() 
+	checklock.Unlock()
 
 	//similar code to spider
 	send_data, err := json.Marshal(page_data)
@@ -190,19 +190,19 @@ func send_to_proc() {
 
 }
 
-func proc_loop(){ 
+func proc_loop() {
 	//send_to_proc used to be triggered in manage_queue, I don't like it being dependent on seperate goroutines so has been split
 	//doesn't really need to be own function at all but it helps visually for me and sets pace independent on main loop
 	pcount := 0
-	for{
+	for {
 		lock.Lock()
 		time.Sleep(1 * time.Second)
 		if len(queue) > 0 {
-			fmt.Println("calling proc",pcount) 
-			go send_to_proc() 
-			pcount+=1 
+			fmt.Println("calling proc", pcount)
+			go send_to_proc()
+			pcount += 1
 		}
 		lock.Unlock()
-	} 
+	}
 
 }

@@ -6,119 +6,105 @@ from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 import sys
 import string
- 
-#queries the mongo database and returns the results to the frontend via interface.py
 
-url_dict={}
+# queries the mongo database and returns the results to the frontend via interface.py
+
+url_dict = {}
+
 
 def main():
- query=get_query()
- query=proccess_query(query)
- 
+    query = get_query()
+    query = proccess_query(query)
 
- global c
- c=pm.MongoClient("mongodb://localhost:27018")
- 
- get_mongo(query)
-  
- 
-def proccess_query(data): 
- #just a copy of the lematising code from processor
- 
-    data=data.lower()
-   
-    
-    data=nltk.word_tokenize(data)
-    #remove punctuation
-    data=[text for text in data if text not in string.punctuation]
+    global c
+    c = pm.MongoClient("mongodb://localhost:27018")
 
-    #remove stopwords
-    stopwords=set(nltkstopwords.words("english"))
-    data=[text for text in data if text not in stopwords]
-
-    #custom removal
-    removal=["\\n","''","``"]
-    data=[text for text in data if text not in removal]
+    get_mongo(query)
 
 
-    #reduce down
-    lemmatizer=WordNetLemmatizer()
-    data=[lemmatizer.lemmatize(text) for text in data]
+def proccess_query(data):
+    # just a copy of the lematising code from processor
 
-    #Needs to be list for pipeline 
-    #data=" ".join(data)
+    data = data.lower()
+
+    data = nltk.word_tokenize(data)
+    # remove punctuation
+    data = [text for text in data if text not in string.punctuation]
+
+    # remove stopwords
+    stopwords = set(nltkstopwords.words("english"))
+    data = [text for text in data if text not in stopwords]
+
+    # custom removal
+    removal = ["\\n", "''", "``"]
+    data = [text for text in data if text not in removal]
+
+    # reduce down
+    lemmatizer = WordNetLemmatizer()
+    data = [lemmatizer.lemmatize(text) for text in data]
+
+    # Needs to be list for pipeline
+    # data=" ".join(data)
     return data
 
 
 def get_query():
- query=sys.stdin.readline()
- query=query.strip()
- return query
+    # gets input from interface
+    query = sys.stdin.readline()
+    query = query.strip()
+    return query
+
 
 def get_mongo(query):
- db=c["database"]
- col=db["page_information"]  
+    db = c["database"]
+    col = db["page_information"]
 
- #AI ASSISTED TO MAKE CAUSE GOD HELP ME IN FORMATTING MATCH SCORE
- aggpipeline = [
+    # AI ASSISTED TO MAKE CAUSE GOD HELP ME IN FORMATTING MATCH SCORE
+    aggpipeline = [
         {
             "$project": {
                 "_id": 0,
-                "URL": {
-                    "$ifNull": ["$URL", "$page_information.URL"]
-                },
-                "Name": {
-                    "$ifNull": ["$URL", "$page_information.Name"]
-                },
+                "URL": {"$ifNull": ["$URL", "$page_information.URL"]},
+                "Name": {"$ifNull": ["$URL", "$page_information.Name"]},
                 "match_score": {
                     "$sum": [
                         {
                             "$ifNull": [
                                 {
-                                    "$toInt": { 
+                                    "$toInt": {
                                         "$getField": {
                                             "field": kw,
                                             "input": {
-                                                "$ifNull": [ 
+                                                "$ifNull": [
                                                     "$word_frequency",
-                                                    {"$ifNull": ["$page_information.word_frequency", {}]}
+                                                    {
+                                                        "$ifNull": [
+                                                            "$page_information.word_frequency",
+                                                            {},
+                                                        ]
+                                                    },
                                                 ]
-                                            }
+                                            },
                                         }
                                     }
                                 },
-                                0
+                                0,
                             ]
                         }
                         for kw in query
                     ]
-                }
+                },
             }
         },
-        {"$match": {"match_score": {"$gt": 0}}}, 
-        {"$sort": {"match_score": -1}}
+        {"$match": {"match_score": {"$gt": 0}}},
+        {"$sort": {"match_score": -1}},
     ]
- results = list(col.aggregate(aggpipeline))
+    results = list(col.aggregate(aggpipeline))
 
- results=json.dumps(results)
+    results = json.dumps(results)
 
- 
- print(results) 
-  
-
-
-
-
-
-
+    # output to waiting interface
+    print(results)
 
 
 main()
-
-
-
-# dictionary of all urls containing keywords
-# add up total of keywords found per url for a score in the dict
-# order results by that score
-
-

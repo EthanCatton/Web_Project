@@ -47,7 +47,7 @@ services:
         ipv4_address: 192.168.57.15
 
   manager:
-    #image manager_img
+    #image: manager_img
     build:
       context: ./Manager
       dockerfile: Manager_Docker
