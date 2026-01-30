@@ -5,8 +5,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      main:
-        ipv4_address: 192.168.57.3
+      - main
 
   mongo:
     image: mongo:latest
@@ -17,8 +16,7 @@ services:
     volumes:
       - ../Database:/data/db
     networks:
-      main:
-        ipv4_address: 192.168.57.30
+      - main
 
   spider:
     #image: spider_img
@@ -34,17 +32,14 @@ services:
       context: ./queue
       dockerfile: Queue_Docker
     networks:
-      main:
-        ipv4_address: 192.168.57.5
-
+      - main
   processor:
     #image: processor_img
     build:
       context: ./processor
       dockerfile: Processor_Docker
     networks:
-      main:
-        ipv4_address: 192.168.57.15
+      - main
 
   manager:
     #image: manager_img
@@ -52,13 +47,8 @@ services:
       context: ./Manager
       dockerfile: Manager_Docker
     networks:
-      main:
-        ipv4_address: 192.168.57.100
+      - main
 
 networks:
   main:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.57.0/24
+    name: main_network

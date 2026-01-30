@@ -28,6 +28,7 @@ type Webpage struct {
 }
 
 var site_counter int = 1
+var conn net.Conn
 
 // covers actually crawling
 func main() {
@@ -123,11 +124,20 @@ func data_handling(page_data Webpage, emptystruct Webpage) {
 	send_data, err := json.Marshal(page_data)
 	//splits with newline
 	send_data = append(send_data, '\n') //doesnt work with ""?
-	conn, err := net.Dial("tcp", "192.168.57.5:5757")
-	if err != nil {
-		fmt.Println(red+"error 2:", err)
+	for {
+		temp, err := net.Dial("tcp", "queue:5757")
+		conn = temp
+
+		if err != nil {
+			fmt.Println(red+"error 2:", err)
+			time.Sleep(time.Second * 10)
+		}
+
+		if conn != nil {
+			defer conn.Close()
+			break
+		}
 	}
-	defer conn.Close()
 
 	_, err = conn.Write(send_data)
 	//fmt.Println(pink + "data sent")

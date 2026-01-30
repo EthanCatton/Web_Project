@@ -22,7 +22,7 @@ def init_db(c):
 def monitor():
     global rlimit
 
-    r = redis.Redis(host="192.168.57.3", port=6379, decode_responses=True)
+    r = redis.Redis(host="redis", port=6379, decode_responses=True)
     while True:
 
         rlen = r.llen("page_information")
@@ -69,7 +69,7 @@ def send_to_db(db_arr):
 def main():
     print("running")
     global c
-    c = pm.MongoClient("192.168.57.30")
+    c = pm.MongoClient("mongo")
     init_db(c)
     monitor()
 

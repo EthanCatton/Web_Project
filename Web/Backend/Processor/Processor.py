@@ -97,7 +97,7 @@ def data_output(og_data, lem_data):
     lem_json = json.dumps(lem_data)
     stored_data = json.dumps([og_json, lem_json])
 
-    r = redis.Redis(host="192.168.57.3", port=6379, decode_responses=True)
+    r = redis.Redis(host="redis", port=6379, decode_responses=True)
     upload_counter += 1
     # 0:200  just gives a snippet of og data for preview
     print("Pushing data to Redis:", upload_counter, og_data[0:200])
@@ -119,7 +119,7 @@ def sequence(og_data):
 
 
 async def main():
-    server = await asy.start_server(data_input, "192.168.57.15", 5757, limit=5048000)
+    server = await asy.start_server(data_input, "processor", 5757, limit=5048000)
     # starts sever and should manage exit neatly
     async with server:
         await server.serve_forever()

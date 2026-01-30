@@ -33,15 +33,23 @@ var checklock sync.Mutex
 var checker string = ""
 var counter int = 1
 
+var lis net.Listener
+
 func main() {
 	//catches spider data
 	fmt.Println("Running")
-	lis, err := net.Listen("tcp", "192.168.57.5:5757")
-	if err != nil {
-		fmt.Println(red+"error 1: ", err)
-
+	for {
+		temp, err := net.Listen("tcp", "0.0.0.0:5757")
+		lis = temp
+		if err != nil {
+			fmt.Println(red+"error 1: ", err)
+			time.Sleep(time.Second * 5)
+		}
+		if lis != nil {
+			defer lis.Close()
+			break
+		}
 	}
-	defer lis.Close()
 
 	go proc_loop()
 
@@ -161,11 +169,12 @@ func send_to_proc() {
 	send_data, err := json.Marshal(page_data)
 	_ = err
 	send_data = append(send_data, '\n')
-	conn, err := net.Dial("tcp", "192.168.57.15:5757")
+	conn, err := net.Dial("tcp", "processor:5757")
 
 	if err != nil {
 		fmt.Println(red+"error 6:", err)
 		time.Sleep(3 * time.Second)
+		//uncertain if this should stay or not
 		//go send_to_proc()
 		return
 	}
